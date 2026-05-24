@@ -27,14 +27,15 @@
         .main-header {
             background: linear-gradient(135deg, #0f2b3d 0%, #1a3a4f 100%);
             border-radius: 20px;
-            padding: 5px 25px 15px 25px;
+            padding: 20px 25px;
             margin-bottom: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
         /* Row 1 - Nama Syarikat */
         .company-row {
-            padding: 15px 0 5px 0;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
             border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         .company-input {
@@ -56,27 +57,36 @@
             font-weight: normal;
         }
 
-        /* Row 2 - Tajuk + Bulan */
+        /* Row 2 - Tajuk + Bulan + Tahun */
         .title-row {
-            padding: 10px 0;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
+            gap: 20px;
+        }
+        .title-left {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
             gap: 15px;
         }
         .title-input {
             background: transparent;
             border: none;
             font-size: 18px;
-            font-weight: 500;
+            font-weight: 600;
             color: #ffd966;
-            width: 250px;
-            padding: 5px 0;
+            width: 260px;
+            padding: 8px 0;
         }
         .title-input:focus {
             outline: none;
             border-bottom: 2px solid #ffd966;
+        }
+        .separator {
+            color: rgba(255,255,255,0.4);
+            font-size: 18px;
         }
         .month-selector {
             background: rgba(255,255,255,0.15);
@@ -88,12 +98,24 @@
             cursor: pointer;
             font-size: 14px;
         }
-        .month-selector:hover {
-            background: rgba(255,255,255,0.25);
+        .year-input {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            padding: 8px 18px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            width: 100px;
+            text-align: center;
+        }
+        .year-input:focus {
+            outline: none;
+            border-color: #ffd966;
         }
         .date-badge {
             background: #2c5a6e;
-            padding: 8px 18px;
+            padding: 8px 20px;
             border-radius: 30px;
             color: #ffd966;
             font-weight: 600;
@@ -181,11 +203,11 @@
             border-color: #1e4a6e;
             box-shadow: 0 0 0 3px rgba(30,74,110,0.1);
         }
-        .datetime-preview {
+        .date-preview {
             background: #eef2fa;
             padding: 8px 12px;
             border-radius: 10px;
-            font-size: 12px;
+            font-size: 13px;
             margin-top: 8px;
             color: #1e4a6e;
             font-weight: 500;
@@ -281,7 +303,6 @@
         .kredit-cell { color: #c0392b; font-weight: 600; }
         .baki-cell { font-weight: 700; color: #1e4a6e; }
 
-        /* ========== FOOTER ========== */
         .footer {
             margin-top: 25px;
             text-align: center;
@@ -293,6 +314,7 @@
             body { padding: 15px; }
             .stat-card .value { font-size: 16px; }
             .company-input { font-size: 18px; }
+            .title-left { flex-direction: column; align-items: flex-start; }
         }
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -305,9 +327,9 @@
             <input type="text" id="companyName" class="company-input" placeholder="NAMA SYARIKAT / PERNIAGAAN" value="SYARIKAT ANDA">
         </div>
         <div class="title-row">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <input type="text" id="reportTitle" class="title-input" placeholder="CASH FLOW STATEMENT" value="PENYATA ALIRAN TUNAI">
-                <span style="color:rgba(255,255,255,0.6); font-size:13px;">|</span>
+            <div class="title-left">
+                <input type="text" id="reportTitle" class="title-input" placeholder="PENYATA ALIRAN TUNAI" value="PENYATA ALIRAN TUNAI">
+                <span class="separator">|</span>
                 <select id="monthSelect" class="month-selector">
                     <option value="Januari">Januari</option><option value="Februari">Februari</option>
                     <option value="Mac">Mac</option><option value="April">April</option>
@@ -316,7 +338,7 @@
                     <option value="September">September</option><option value="Oktober">Oktober</option>
                     <option value="November">November</option><option value="Disember">Disember</option>
                 </select>
-                <input type="number" id="yearSelect" class="month-selector" style="width:80px;" value="2025">
+                <input type="number" id="yearSelect" class="year-input" value="2025" style="width: 95px;">
             </div>
             <div class="date-badge" id="liveClock"></div>
         </div>
@@ -335,9 +357,9 @@
         <h3><span>✏️</span> TAMBAH / EDIT TRANSAKSI</h3>
         <div class="form-grid">
             <div class="input-group">
-                <label>📅 TARIKH & MASA</label>
-                <input type="datetime-local" id="tarikhMasa" step="1">
-                <div class="datetime-preview" id="tarikhPreview">⏰ Pilih tarikh dan masa</div>
+                <label>📅 TARIKH</label>
+                <input type="date" id="tarikhInput" step="1">
+                <div class="date-preview" id="tarikhPreview">📅 Pilih tarikh</div>
             </div>
             <div class="input-group">
                 <label>📝 KETERANGAN</label>
@@ -384,7 +406,7 @@
                 <thead>
                     <tr>
                         <th style="width:50px">#</th>
-                        <th>Tarikh & Masa</th>
+                        <th>Tarikh</th>
                         <th>Keterangan</th>
                         <th>Debit (RM)</th>
                         <th>Kredit (RM)</th>
@@ -408,50 +430,44 @@
     let transactions = [];
     let selectedIndex = null;
 
-    // ========== JAM LANGSUNG ==========
+    // ========== JAM LANGSUNG (HARI SAHAJA) ==========
     function updateClock() {
         let now = new Date();
-        let formatted = now.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) + 
-                       ' · ' + now.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-        document.getElementById('liveClock').innerHTML = `🕐 ${formatted}`;
+        let formatted = now.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
+        document.getElementById('liveClock').innerHTML = `📅 ${formatted}`;
     }
-    setInterval(updateClock, 1000);
+    setInterval(updateClock, 60000);
     updateClock();
 
     // ========== SET DEFAULT TARIKH ==========
-    function setDefaultDateTime() {
+    function setDefaultDate() {
         let now = new Date();
         let year = now.getFullYear();
         let month = String(now.getMonth() + 1).padStart(2, '0');
         let day = String(now.getDate()).padStart(2, '0');
-        let hours = String(now.getHours()).padStart(2, '0');
-        let minutes = String(now.getMinutes()).padStart(2, '0');
-        let seconds = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('tarikhMasa').value = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        document.getElementById('tarikhInput').value = `${year}-${month}-${day}`;
         updateTarikhPreview();
     }
 
     function updateTarikhPreview() {
-        let val = document.getElementById('tarikhMasa').value;
+        let val = document.getElementById('tarikhInput').value;
         if(val) {
             let d = new Date(val);
-            let formatted = d.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
-                           ' · ' + d.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            let formatted = d.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
             document.getElementById('tarikhPreview').innerHTML = `📅 ${formatted}`;
         }
     }
 
-    function formatTarikhMasa(datetimeValue) {
-        if(!datetimeValue) return new Date().toLocaleString('ms-MY');
-        let d = new Date(datetimeValue);
-        return d.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
-               ' ' + d.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    function formatTarikh(dateValue) {
+        if(!dateValue) return new Date().toLocaleDateString('ms-MY');
+        let d = new Date(dateValue);
+        return d.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
     }
 
     // ========== BACA DARI FORM ==========
     function getTransactionFromForm() {
-        let dtVal = document.getElementById('tarikhMasa').value;
-        let tarikhMasa = formatTarikhMasa(dtVal);
+        let dtVal = document.getElementById('tarikhInput').value;
+        let tarikh = formatTarikh(dtVal);
         let keterangan = document.getElementById('keterangan').value.trim() || "-";
         let debit = parseFloat(document.getElementById('debit').value) || 0;
         let kredit = parseFloat(document.getElementById('kredit').value) || 0;
@@ -460,7 +476,7 @@
         if(debit === 0 && kredit === 0) throw new Error("❌ Isi jumlah Debit atau Kredit");
         
         let kategori = document.getElementById('kategori').value;
-        return { tarikhMasa, keterangan, debit, kredit, kategori, baki: 0 };
+        return { tarikh, keterangan, debit, kredit, kategori, baki: 0 };
     }
 
     // ========== KIRA BAKI ==========
@@ -499,7 +515,7 @@
             transactions = JSON.parse(savedTx);
             recalcBalances();
         } else {
-            transactions = [];  // KOSONG - TIADA DATA CONTOH
+            transactions = [];
         }
         renderTable();
         updateSummary();
@@ -520,7 +536,7 @@
             let row = tbody.insertRow();
             if(selectedIndex === i) row.classList.add('selected');
             row.insertCell(0).innerText = i + 1;
-            row.insertCell(1).innerText = t.tarikhMasa;
+            row.insertCell(1).innerText = t.tarikh;
             row.insertCell(2).innerText = t.keterangan;
             row.insertCell(3).innerHTML = t.debit > 0 ? `<span class="debit-cell">RM ${t.debit.toFixed(2)}</span>` : '-';
             row.insertCell(4).innerHTML = t.kredit > 0 ? `<span class="kredit-cell">RM ${t.kredit.toFixed(2)}</span>` : '-';
@@ -552,23 +568,21 @@
         document.getElementById('kredit').value = t.kredit;
         document.getElementById('kategori').value = t.kategori;
         
-        // Parse tarikh untuk datetime-local
+        // Parse tarikh untuk date input
         try {
-            let parts = t.tarikhMasa.split(' ');
-            let datePart = parts[0].split('/');
-            let timePart = parts[1] || '00:00:00';
-            if(datePart.length === 3) {
-                let formatted = `${datePart[2]}-${datePart[1]}-${datePart[0]}T${timePart}`;
-                document.getElementById('tarikhMasa').value = formatted;
+            let parts = t.tarikh.split('/');
+            if(parts.length === 3) {
+                let formatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                document.getElementById('tarikhInput').value = formatted;
             }
-        } catch(e) { setDefaultDateTime(); }
+        } catch(e) { setDefaultDate(); }
         updateTarikhPreview();
         renderTable();
     }
 
     function clearForm() {
         selectedIndex = null;
-        setDefaultDateTime();
+        setDefaultDate();
         document.getElementById('keterangan').value = '';
         document.getElementById('debit').value = '0';
         document.getElementById('kredit').value = '0';
@@ -633,7 +647,7 @@
         }
     }
 
-    // ========== EXPORT EXCEL (DENGAN ROW 1,2,5) ==========
+    // ========== EXPORT EXCEL ==========
     function exportExcel() {
         let company = document.getElementById('companyName').value || 'SYARIKAT ANDA';
         let title = document.getElementById('reportTitle').value || 'PENYATA ALIRAN TUNAI';
@@ -642,20 +656,15 @@
         let fullTitle = `${title} - ${month} ${year}`;
         
         let sheetData = [];
-        // Row 1: Nama Syarikat
         sheetData.push([company, '', '', '', '', '']);
-        // Row 2: Tajuk + Bulan
         sheetData.push([fullTitle, '', '', '', '', '']);
-        // Row 3: Kosong
         sheetData.push(['', '', '', '', '', '']);
-        // Row 4: Kosong
         sheetData.push(['', '', '', '', '', '']);
-        // Row 5: Header Kolum
-        sheetData.push(['Tarikh & Masa', 'Keterangan', 'Debit (RM)', 'Kredit (RM)', 'Baki (RM)', 'Kategori']);
+        sheetData.push(['Tarikh', 'Keterangan', 'Debit (RM)', 'Kredit (RM)', 'Baki (RM)', 'Kategori']);
         
         for(let t of transactions) {
             sheetData.push([
-                t.tarikhMasa,
+                t.tarikh,
                 t.keterangan,
                 t.debit > 0 ? t.debit : '',
                 t.kredit > 0 ? t.kredit : '',
@@ -669,7 +678,7 @@
         }
         
         let ws = XLSX.utils.aoa_to_sheet(sheetData);
-        ws['!cols'] = [{wch:20},{wch:35},{wch:15},{wch:15},{wch:15},{wch:18}];
+        ws['!cols'] = [{wch:15},{wch:35},{wch:15},{wch:15},{wch:15},{wch:18}];
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'CashFlow');
         
@@ -691,16 +700,14 @@
                 let rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
                 
                 let newData = [];
-                // Data start dari row 5 (index 4)
-                for(let i = 4; i < rows.length; i++) {
+                for(let i = 5; i < rows.length; i++) {
                     let row = rows[i];
                     if(!row || row.length < 2) continue;
-                    if(i === 4) continue; // skip header row
                     let debit = parseFloat(row[2]) || 0;
                     let kredit = parseFloat(row[3]) || 0;
                     if(debit === 0 && kredit === 0 && !row[1]) continue;
                     newData.push({
-                        tarikhMasa: row[0] || new Date().toLocaleString('ms-MY'),
+                        tarikh: row[0] || new Date().toLocaleDateString('ms-MY'),
                         keterangan: row[1] || '-',
                         debit: debit,
                         kredit: kredit,
@@ -739,7 +746,7 @@
     }
 
     // ========== EVENT & INIT ==========
-    document.getElementById('tarikhMasa').addEventListener('change', updateTarikhPreview);
+    document.getElementById('tarikhInput').addEventListener('change', updateTarikhPreview);
     document.getElementById('debit').addEventListener('input', function() { if(this.value > 0) document.getElementById('kredit').value = 0; });
     document.getElementById('kredit').addEventListener('input', function() { if(this.value > 0) document.getElementById('debit').value = 0; });
     document.getElementById('companyName').addEventListener('change', saveToLocal);
@@ -759,7 +766,7 @@
     document.head.appendChild(style);
 
     loadFromLocal();
-    setDefaultDateTime();
+    setDefaultDate();
 </script>
 </body>
 </html>
