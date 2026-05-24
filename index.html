@@ -5,151 +5,407 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cash Flow Manager</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;padding:20px}
-        .container{max-width:1400px;margin:0 auto}
-        .header{background:#1e3a5f;color:#fff;padding:20px;border-radius:16px;margin-bottom:20px}
-        .toolbar{background:#fff;padding:15px;border-radius:12px;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap}
-        button{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
-        .btn-primary{background:#1e3a5f;color:#fff}
-        .btn-success{background:#10b981;color:#fff}
-        .btn-danger{background:#ef4444;color:#fff}
-        .btn-warning{background:#f59e0b;color:#fff}
-        .form-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:20px}
-        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
-        input,select{padding:10px;border:1px solid #ccc;border-radius:8px;width:100%}
-        
-        .datetime-group{display:flex;gap:10px;align-items:center}
-        .datetime-group input{flex:1}
-        .time-preview{background:#eef2ff;padding:8px 12px;border-radius:8px;font-size:14px;font-weight:500;color:#1e3a5f;margin-top:8px}
-        
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}
-        th{background:#f1f5f9}
-        tr:hover{background:#fefce8;cursor:pointer}
-        .selected{background:#eef2ff}
-        .summary{background:#f8fafc;padding:15px;border-radius:12px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap}
-        .stat{padding:8px 16px;background:#fff;border-radius:20px}
-        
-        @media (max-width:768px){
-            body{padding:10px}
-            .form-grid{grid-template-columns:1fr}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        .empty-state{
-            text-align:center;
-            padding:60px 20px;
-            color:#94a3b8;
-            font-size:16px;
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8ecf2 0%, #dce1e8 100%);
+            min-height: 100vh;
+            padding: 30px;
         }
-        .empty-state i{
-            font-size:48px;
-            margin-bottom:15px;
-            display:block;
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ========== HEADER UTAMA ========== */
+        .main-header {
+            background: linear-gradient(135deg, #0f2b3d 0%, #1a3a4f 100%);
+            border-radius: 20px;
+            padding: 5px 25px 15px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* Row 1 - Nama Syarikat */
+        .company-row {
+            padding: 15px 0 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .company-input {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            width: 100%;
+            padding: 8px 0;
+            letter-spacing: 1px;
+        }
+        .company-input:focus {
+            outline: none;
+            border-bottom: 2px solid #ffd966;
+        }
+        .company-input::placeholder {
+            color: rgba(255,255,255,0.5);
+            font-weight: normal;
+        }
+
+        /* Row 2 - Tajuk + Bulan */
+        .title-row {
+            padding: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .title-input {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            font-weight: 500;
+            color: #ffd966;
+            width: 250px;
+            padding: 5px 0;
+        }
+        .title-input:focus {
+            outline: none;
+            border-bottom: 2px solid #ffd966;
+        }
+        .month-selector {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            padding: 8px 18px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .month-selector:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .date-badge {
+            background: #2c5a6e;
+            padding: 8px 18px;
+            border-radius: 30px;
+            color: #ffd966;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* ========== TOOLBAR ========== */
+        .toolbar {
+            background: white;
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-primary { background: #1e4a6e; color: white; }
+        .btn-success { background: #2e7d64; color: white; }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-warning { background: #e67e22; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+
+        /* ========== FORM CARD ========== */
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .form-card h3 {
+            color: #1e4a6e;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-group input, .input-group select {
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: #fefefe;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #1e4a6e;
+            box-shadow: 0 0 0 3px rgba(30,74,110,0.1);
+        }
+        .datetime-preview {
+            background: #eef2fa;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-top: 8px;
+            color: #1e4a6e;
+            font-weight: 500;
+        }
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* ========== SUMMARY ========== */
+        .summary {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .stat-card .label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .stat-card .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e4a6e;
+        }
+        .stat-card.debit .value { color: #2e7d64; }
+        .stat-card.kredit .value { color: #c0392b; }
+        .stat-card.baki .value { color: #1e4a6e; }
+
+        /* ========== TABLE ========== */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            background: #1e4a6e;
+            color: white;
+            padding: 14px 12px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+        }
+        tr:hover {
+            background: #f1f9fe;
+        }
+        tr.selected {
+            background: #e3f2fd;
+        }
+        .empty-row td {
+            text-align: center;
+            padding: 60px;
+            color: #adb5bd;
+            font-size: 14px;
+        }
+        .debit-cell { color: #2e7d64; font-weight: 600; }
+        .kredit-cell { color: #c0392b; font-weight: 600; }
+        .baki-cell { font-weight: 700; color: #1e4a6e; }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .stat-card .value { font-size: 16px; }
+            .company-input { font-size: 18px; }
         }
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <h1>💰 Cash Flow Manager</h1>
-        <p>Urus Aliran Tunai · <span id="liveClock"></span></p>
+    <!-- Header dengan Row 1 & Row 2 -->
+    <div class="main-header">
+        <div class="company-row">
+            <input type="text" id="companyName" class="company-input" placeholder="NAMA SYARIKAT / PERNIAGAAN" value="SYARIKAT ANDA">
+        </div>
+        <div class="title-row">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <input type="text" id="reportTitle" class="title-input" placeholder="CASH FLOW STATEMENT" value="PENYATA ALIRAN TUNAI">
+                <span style="color:rgba(255,255,255,0.6); font-size:13px;">|</span>
+                <select id="monthSelect" class="month-selector">
+                    <option value="Januari">Januari</option><option value="Februari">Februari</option>
+                    <option value="Mac">Mac</option><option value="April">April</option>
+                    <option value="Mei">Mei</option><option value="Jun">Jun</option>
+                    <option value="Julai">Julai</option><option value="Ogos">Ogos</option>
+                    <option value="September">September</option><option value="Oktober">Oktober</option>
+                    <option value="November">November</option><option value="Disember">Disember</option>
+                </select>
+                <input type="number" id="yearSelect" class="month-selector" style="width:80px;" value="2025">
+            </div>
+            <div class="date-badge" id="liveClock"></div>
+        </div>
     </div>
 
+    <!-- Toolbar -->
     <div class="toolbar">
-        <button class="btn-primary" onclick="exportExcel()">📥 Muat Turun Excel</button>
-        <button onclick="importExcel()">📂 Import Excel</button>
-        <button class="btn-warning" onclick="newFile()">🆕 Baru</button>
-        <button onclick="clearAllData()" class="btn-danger">🗑️ Reset Semua Data</button>
+        <button class="btn-primary" onclick="exportExcel()"><span>📥</span> Muat Turun Excel</button>
+        <button class="btn-success" onclick="importExcel()"><span>📂</span> Import Excel</button>
+        <button class="btn-warning" onclick="newFile()"><span>🆕</span> Fail Baru</button>
+        <button class="btn-danger" onclick="clearAllData()"><span>🗑️</span> Reset Semua</button>
     </div>
 
+    <!-- Form Input -->
     <div class="form-card">
-        <h3>📝 Tambah / Edit Transaksi</h3>
+        <h3><span>✏️</span> TAMBAH / EDIT TRANSAKSI</h3>
         <div class="form-grid">
-            <div>
-                <label>📅 Tarikh & Masa</label>
-                <div class="datetime-group">
-                    <input type="datetime-local" id="tarikhMasa" step="1">
-                </div>
-                <div class="time-preview" id="tarikhPreview">
-                    ⏰ Pilih tarikh dan masa
-                </div>
+            <div class="input-group">
+                <label>📅 TARIKH & MASA</label>
+                <input type="datetime-local" id="tarikhMasa" step="1">
+                <div class="datetime-preview" id="tarikhPreview">⏰ Pilih tarikh dan masa</div>
             </div>
-            <div>
-                <label>📝 Keterangan</label>
-                <input type="text" id="keterangan" placeholder="Contoh: Jualan, Belian, Gaji...">
+            <div class="input-group">
+                <label>📝 KETERANGAN</label>
+                <input type="text" id="keterangan" placeholder="Contoh: Jualan Tunai, Belian Stok...">
             </div>
-            <div>
-                <label>💰 Debit (RM) - Wang Masuk</label>
-                <input type="number" id="debit" placeholder="0.00" step="0.01" value="0">
+            <div class="input-group">
+                <label>💰 DEBIT (RM) - WANG MASUK</label>
+                <input type="number" id="debit" step="0.01" value="0" placeholder="0.00">
             </div>
-            <div>
-                <label>💸 Kredit (RM) - Wang Keluar</label>
-                <input type="number" id="kredit" placeholder="0.00" step="0.01" value="0">
+            <div class="input-group">
+                <label>💸 KREDIT (RM) - WANG KELUAR</label>
+                <input type="number" id="kredit" step="0.01" value="0" placeholder="0.00">
             </div>
-            <div>
-                <label>🏷️ Kategori</label>
+            <div class="input-group">
+                <label>🏷️ KATEGORI</label>
                 <select id="kategori">
-                    <option>Baki Awal</option>
-                    <option>Jualan</option>
-                    <option>Belian</option>
-                    <option>Perbelanjaan</option>
-                    <option>Sewa</option>
-                    <option>Utiliti</option>
-                    <option>Gaji</option>
-                    <option>Stok</option>
-                    <option>Pengangkutan</option>
-                    <option>Promosi</option>
-                    <option>Cukai</option>
-                    <option>Lain-lain</option>
+                    <option>Baki Awal</option><option>Jualan</option><option>Belian</option>
+                    <option>Perbelanjaan</option><option>Sewa</option><option>Utiliti</option>
+                    <option>Gaji</option><option>Stok</option><option>Pengangkutan</option>
+                    <option>Promosi</option><option>Cukai</option><option>Lain-lain</option>
                 </select>
             </div>
         </div>
-        <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap">
+        <div class="form-actions">
             <button class="btn-primary" onclick="tambah()">➕ TAMBAH</button>
             <button class="btn-success" onclick="edit()">✏️ EDIT</button>
             <button class="btn-danger" onclick="hapus()">🗑️ DELETE</button>
-            <button onclick="clearForm()">🔄 CLEAR FORM</button>
+            <button class="btn-secondary" onclick="clearForm()">🔄 CLEAR FORM</button>
         </div>
     </div>
 
+    <!-- Summary -->
     <div class="summary">
-        <div class="stat">💰 Debit: RM <span id="totalDebit">0.00</span></div>
-        <div class="stat">💸 Kredit: RM <span id="totalKredit">0.00</span></div>
-        <div class="stat">🏦 Baki Semasa: RM <span id="totalBaki">0.00</span></div>
-        <div class="stat">📊 Jumlah Rekod: <span id="totalRekod">0</span></div>
+        <div class="stat-card debit"><span class="label">💰 JUMLAH DEBIT</span><span class="value" id="totalDebit">0.00</span></div>
+        <div class="stat-card kredit"><span class="label">💸 JUMLAH KREDIT</span><span class="value" id="totalKredit">0.00</span></div>
+        <div class="stat-card baki"><span class="label">🏦 BAKI SEMASA</span><span class="value" id="totalBaki">0.00</span></div>
+        <div class="stat-card"><span class="label">📊 JUMLAH REKOD</span><span class="value" id="totalRekod">0</span></div>
     </div>
 
-    <div style="overflow-x:auto; max-height:500px; overflow-y:auto">
-        <table id="table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Tarikh & Masa</th>
-                    <th>Keterangan</th>
-                    <th>Debit (RM)</th>
-                    <th>Kredit (RM)</th>
-                    <th>Baki (RM)</th>
-                    <th>Kategori</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <tr class="empty-state">
-                    <td colspan="7">
-                        <i>📭</i>
-                        Tiada rekod transaksi<br>
-                        Klik <strong>TAMBAH</strong> untuk mula menggunakan
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Table -->
+    <div class="table-container">
+        <div class="table-wrapper">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width:50px">#</th>
+                        <th>Tarikh & Masa</th>
+                        <th>Keterangan</th>
+                        <th>Debit (RM)</th>
+                        <th>Kredit (RM)</th>
+                        <th>Baki (RM)</th>
+                        <th>Kategori</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr class="empty-row"><td colspan="7">📭 Tiada rekod transaksi. Klik TAMBAH untuk mula menggunakan</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="footer">
+        <span>📌 Data disimpan secara automatik di penyemak imbas (localStorage) | Muat turun Excel untuk simpanan kekal</span>
     </div>
 </div>
 
 <script>
-    // ========== DATA ==========
-    let data = [];
+    // ========== DATA UTAMA ==========
+    let transactions = [];
     let selectedIndex = null;
 
     // ========== JAM LANGSUNG ==========
@@ -157,12 +413,12 @@
         let now = new Date();
         let formatted = now.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) + 
                        ' · ' + now.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-        document.getElementById('liveClock').innerText = formatted;
+        document.getElementById('liveClock').innerHTML = `🕐 ${formatted}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // ========== SET DEFAULT TARIKH (SEKARANG) ==========
+    // ========== SET DEFAULT TARIKH ==========
     function setDefaultDateTime() {
         let now = new Date();
         let year = now.getFullYear();
@@ -171,73 +427,79 @@
         let hours = String(now.getHours()).padStart(2, '0');
         let minutes = String(now.getMinutes()).padStart(2, '0');
         let seconds = String(now.getSeconds()).padStart(2, '0');
-        let datetimeString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-        document.getElementById('tarikhMasa').value = datetimeString;
+        document.getElementById('tarikhMasa').value = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
         updateTarikhPreview();
     }
 
-    // ========== PREVIEW TARIKH MASA ==========
     function updateTarikhPreview() {
-        let datetimeValue = document.getElementById('tarikhMasa').value;
-        if(datetimeValue) {
-            let date = new Date(datetimeValue);
-            let formatted = date.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
-                           ' · ' + date.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        let val = document.getElementById('tarikhMasa').value;
+        if(val) {
+            let d = new Date(val);
+            let formatted = d.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
+                           ' · ' + d.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
             document.getElementById('tarikhPreview').innerHTML = `📅 ${formatted}`;
-        } else {
-            document.getElementById('tarikhPreview').innerHTML = '⏰ Pilih tarikh dan masa';
         }
     }
 
-    // ========== FORMAT TARIKH UNTUK SIMPAN ==========
     function formatTarikhMasa(datetimeValue) {
         if(!datetimeValue) return new Date().toLocaleString('ms-MY');
-        let date = new Date(datetimeValue);
-        return date.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
-               ' ' + date.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        let d = new Date(datetimeValue);
+        return d.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
+               ' ' + d.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
     }
 
     // ========== BACA DARI FORM ==========
-    function getCurrentTransaction() {
-        let datetimeValue = document.getElementById('tarikhMasa').value;
-        let tarikhMasa = formatTarikhMasa(datetimeValue);
+    function getTransactionFromForm() {
+        let dtVal = document.getElementById('tarikhMasa').value;
+        let tarikhMasa = formatTarikhMasa(dtVal);
         let keterangan = document.getElementById('keterangan').value.trim() || "-";
         let debit = parseFloat(document.getElementById('debit').value) || 0;
         let kredit = parseFloat(document.getElementById('kredit').value) || 0;
         
-        if(debit > 0 && kredit > 0) {
-            throw new Error("❌ Pilih sama ada Debit ATAU Kredit sahaja");
-        }
-        if(debit === 0 && kredit === 0) {
-            throw new Error("❌ Sila isi jumlah Debit atau Kredit");
-        }
+        if(debit > 0 && kredit > 0) throw new Error("❌ Pilih Debit ATAU Kredit sahaja");
+        if(debit === 0 && kredit === 0) throw new Error("❌ Isi jumlah Debit atau Kredit");
         
         let kategori = document.getElementById('kategori').value;
-        return { tarikhMasa, keterangan, debit, kredit, kategori };
+        return { tarikhMasa, keterangan, debit, kredit, kategori, baki: 0 };
     }
 
-    // ========== KIRA BAKI SEMULA ==========
-    function recalcBalance() {
+    // ========== KIRA BAKI ==========
+    function recalcBalances() {
         let running = 0;
-        for(let i = 0; i < data.length; i++) {
-            running = running + (data[i].debit || 0) - (data[i].kredit || 0);
-            data[i].baki = running;
+        for(let i = 0; i < transactions.length; i++) {
+            running = running + (transactions[i].debit || 0) - (transactions[i].kredit || 0);
+            transactions[i].baki = running;
         }
     }
 
-    // ========== SIMPAN KE LOCALSTORAGE ==========
+    // ========== SIMPAN / LOAD ==========
     function saveToLocal() {
-        localStorage.setItem("cashflow_data_general", JSON.stringify(data));
+        let headerData = {
+            companyName: document.getElementById('companyName').value,
+            reportTitle: document.getElementById('reportTitle').value,
+            month: document.getElementById('monthSelect').value,
+            year: document.getElementById('yearSelect').value
+        };
+        localStorage.setItem('cashflow_header', JSON.stringify(headerData));
+        localStorage.setItem('cashflow_transactions', JSON.stringify(transactions));
     }
 
-    // ========== LOAD DARI LOCALSTORAGE ==========
     function loadFromLocal() {
-        let saved = localStorage.getItem("cashflow_data_general");
-        if(saved) {
-            data = JSON.parse(saved);
-            recalcBalance();
+        let savedHeader = localStorage.getItem('cashflow_header');
+        if(savedHeader) {
+            let h = JSON.parse(savedHeader);
+            document.getElementById('companyName').value = h.companyName || 'SYARIKAT ANDA';
+            document.getElementById('reportTitle').value = h.reportTitle || 'PENYATA ALIRAN TUNAI';
+            document.getElementById('monthSelect').value = h.month || 'Januari';
+            document.getElementById('yearSelect').value = h.year || 2025;
+        }
+        
+        let savedTx = localStorage.getItem('cashflow_transactions');
+        if(savedTx) {
+            transactions = JSON.parse(savedTx);
+            recalcBalances();
         } else {
-            data = [];  // ❌ TIADA DATA CONTOH - KOSONG TERUS
+            transactions = [];  // KOSONG - TIADA DATA CONTOH
         }
         renderTable();
         updateSummary();
@@ -248,80 +510,62 @@
         let tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         
-        if(data.length === 0) {
-            tbody.innerHTML = `
-                <tr class="empty-state">
-                    <td colspan="7">
-                        <i>📭</i>
-                        Tiada rekod transaksi<br>
-                        Klik <strong>TAMBAH</strong> untuk mula menggunakan
-                    </td>
-                </tr>
-            `;
+        if(transactions.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="7">📭 Tiada rekod transaksi. Klik TAMBAH untuk mula menggunakan</td></tr>';
             return;
         }
         
-        for(let i = 0; i < data.length; i++) {
+        for(let i = 0; i < transactions.length; i++) {
+            let t = transactions[i];
             let row = tbody.insertRow();
-            if(selectedIndex === i) row.className = 'selected';
-            
+            if(selectedIndex === i) row.classList.add('selected');
             row.insertCell(0).innerText = i + 1;
-            row.insertCell(1).innerText = data[i].tarikhMasa;
-            row.insertCell(2).innerText = data[i].keterangan;
-            row.insertCell(3).innerHTML = data[i].debit > 0 ? `RM ${data[i].debit.toFixed(2)}` : '-';
-            row.insertCell(4).innerHTML = data[i].kredit > 0 ? `RM ${data[i].kredit.toFixed(2)}` : '-';
-            row.insertCell(5).innerHTML = `RM ${(data[i].baki || 0).toFixed(2)}`;
-            row.insertCell(6).innerText = data[i].kategori;
-            
+            row.insertCell(1).innerText = t.tarikhMasa;
+            row.insertCell(2).innerText = t.keterangan;
+            row.insertCell(3).innerHTML = t.debit > 0 ? `<span class="debit-cell">RM ${t.debit.toFixed(2)}</span>` : '-';
+            row.insertCell(4).innerHTML = t.kredit > 0 ? `<span class="kredit-cell">RM ${t.kredit.toFixed(2)}</span>` : '-';
+            row.insertCell(5).innerHTML = `<span class="baki-cell">RM ${(t.baki || 0).toFixed(2)}</span>`;
+            row.insertCell(6).innerText = t.kategori;
             row.onclick = (function(idx) { return function() { selectRow(idx); }; })(i);
         }
-        
         updateSummary();
     }
 
-    // ========== UPDATE RINGKASAN ==========
     function updateSummary() {
         let totalD = 0, totalK = 0;
-        for(let d of data) {
-            totalD += d.debit || 0;
-            totalK += d.kredit || 0;
+        for(let t of transactions) {
+            totalD += t.debit || 0;
+            totalK += t.kredit || 0;
         }
-        let baki = data.length > 0 ? data[data.length-1].baki : 0;
+        let baki = transactions.length > 0 ? transactions[transactions.length-1].baki : 0;
         document.getElementById('totalDebit').innerText = totalD.toFixed(2);
         document.getElementById('totalKredit').innerText = totalK.toFixed(2);
         document.getElementById('totalBaki').innerText = baki.toFixed(2);
-        document.getElementById('totalRekod').innerText = data.length;
+        document.getElementById('totalRekod').innerText = transactions.length;
     }
 
-    // ========== PILIH ROW ==========
     function selectRow(idx) {
         selectedIndex = idx;
-        let d = data[idx];
+        let t = transactions[idx];
+        document.getElementById('keterangan').value = t.keterangan;
+        document.getElementById('debit').value = t.debit;
+        document.getElementById('kredit').value = t.kredit;
+        document.getElementById('kategori').value = t.kategori;
         
-        // Parse tarikh masa untuk datetime-local
-        let datePart = d.tarikhMasa.split(' · ')[0];
-        let timePart = d.tarikhMasa.split(' · ')[1] || '00:00:00';
-        let dateObj = null;
-        
+        // Parse tarikh untuk datetime-local
         try {
-            let parts = datePart.split('/');
-            if(parts.length === 3) {
-                let formatted = `${parts[2]}-${parts[1]}-${parts[0]}T${timePart}`;
+            let parts = t.tarikhMasa.split(' ');
+            let datePart = parts[0].split('/');
+            let timePart = parts[1] || '00:00:00';
+            if(datePart.length === 3) {
+                let formatted = `${datePart[2]}-${datePart[1]}-${datePart[0]}T${timePart}`;
                 document.getElementById('tarikhMasa').value = formatted;
             }
-        } catch(e) {
-            setDefaultDateTime();
-        }
-        
-        document.getElementById('keterangan').value = d.keterangan;
-        document.getElementById('debit').value = d.debit;
-        document.getElementById('kredit').value = d.kredit;
-        document.getElementById('kategori').value = d.kategori;
+        } catch(e) { setDefaultDateTime(); }
         updateTarikhPreview();
         renderTable();
     }
 
-    // ========== CLEAR FORM ==========
     function clearForm() {
         selectedIndex = null;
         setDefaultDateTime();
@@ -332,111 +576,108 @@
         renderTable();
     }
 
-    // ========== TAMBAH ==========
     function tambah() {
         try {
-            let newTx = getCurrentTransaction();
-            newTx.baki = 0;
-            data.push(newTx);
-            recalcBalance();
+            let newTx = getTransactionFromForm();
+            transactions.push(newTx);
+            recalcBalances();
             saveToLocal();
             clearForm();
             renderTable();
-            showToast('✅ Transaksi berjaya ditambah', '#10b981');
-        } catch(err) {
-            alert(err.message);
-        }
+            showToast('✅ Transaksi berjaya ditambah');
+        } catch(e) { alert(e.message); }
     }
 
-    // ========== EDIT ==========
     function edit() {
-        if(selectedIndex === null) {
-            alert('⚠️ Sila pilih rekod dari jadual terlebih dahulu');
-            return;
-        }
+        if(selectedIndex === null) { alert('⚠️ Sila pilih rekod dari jadual'); return; }
         try {
-            let updated = getCurrentTransaction();
-            updated.baki = 0;
-            data[selectedIndex] = updated;
-            recalcBalance();
+            let updated = getTransactionFromForm();
+            transactions[selectedIndex] = updated;
+            recalcBalances();
             saveToLocal();
             clearForm();
             renderTable();
-            showToast('✏️ Rekod berjaya dikemaskini', '#f59e0b');
-        } catch(err) {
-            alert(err.message);
-        }
+            showToast('✏️ Rekod dikemaskini');
+        } catch(e) { alert(e.message); }
     }
 
-    // ========== HAPUS ==========
     function hapus() {
-        if(selectedIndex === null) {
-            alert('⚠️ Sila pilih rekod dari jadual terlebih dahulu');
-            return;
-        }
+        if(selectedIndex === null) { alert('⚠️ Sila pilih rekod'); return; }
         if(confirm('🗑️ Padam rekod ini?')) {
-            data.splice(selectedIndex, 1);
-            recalcBalance();
+            transactions.splice(selectedIndex, 1);
+            recalcBalances();
             saveToLocal();
             clearForm();
             renderTable();
-            showToast('🗑️ Rekod telah dipadam', '#ef4444');
+            showToast('🗑️ Rekod dipadam');
         }
     }
 
-    // ========== RESET SEMUA DATA ==========
     function clearAllData() {
-        if(confirm('⚠️ PERINGATAN: Semua data akan hilang selama-lamanya! Pastikan anda sudah muat turun Excel jika perlu. Teruskan?')) {
-            data = [];
+        if(confirm('⚠️ PERINGATAN: Semua data akan hilang! Muat turun Excel dahulu jika perlu. Teruskan?')) {
+            transactions = [];
             saveToLocal();
             clearForm();
             renderTable();
-            showToast('🗑️ Semua data telah direset', '#ef4444');
+            showToast('🗑️ Semua data telah direset');
         }
     }
 
-    // ========== FAIL BARU ==========
     function newFile() {
-        if(confirm('🆕 Buat fail baru? Data sedia ada akan digantikan dengan fail kosong. Simpan dulu dengan "Muat Turun Excel" jika perlu.')) {
-            data = [];
+        if(confirm('🆕 Buat fail baru? Data sedia ada akan diganti.')) {
+            transactions = [];
             saveToLocal();
             clearForm();
             renderTable();
-            showToast('📄 Fail baru (kosong) telah dicipta', '#1e3a5f');
+            showToast('📄 Fail baru (kosong) dicipta');
         }
     }
 
-    // ========== EXPORT EXCEL ==========
+    // ========== EXPORT EXCEL (DENGAN ROW 1,2,5) ==========
     function exportExcel() {
-        let sheetData = [
-            ['Tarikh & Masa', 'Keterangan', 'Debit (RM)', 'Kredit (RM)', 'Baki (RM)', 'Kategori']
-        ];
+        let company = document.getElementById('companyName').value || 'SYARIKAT ANDA';
+        let title = document.getElementById('reportTitle').value || 'PENYATA ALIRAN TUNAI';
+        let month = document.getElementById('monthSelect').value;
+        let year = document.getElementById('yearSelect').value;
+        let fullTitle = `${title} - ${month} ${year}`;
         
-        for(let d of data) {
+        let sheetData = [];
+        // Row 1: Nama Syarikat
+        sheetData.push([company, '', '', '', '', '']);
+        // Row 2: Tajuk + Bulan
+        sheetData.push([fullTitle, '', '', '', '', '']);
+        // Row 3: Kosong
+        sheetData.push(['', '', '', '', '', '']);
+        // Row 4: Kosong
+        sheetData.push(['', '', '', '', '', '']);
+        // Row 5: Header Kolum
+        sheetData.push(['Tarikh & Masa', 'Keterangan', 'Debit (RM)', 'Kredit (RM)', 'Baki (RM)', 'Kategori']);
+        
+        for(let t of transactions) {
             sheetData.push([
-                d.tarikhMasa,
-                d.keterangan,
-                d.debit > 0 ? d.debit : '',
-                d.kredit > 0 ? d.kredit : '',
-                d.baki || 0,
-                d.kategori
+                t.tarikhMasa,
+                t.keterangan,
+                t.debit > 0 ? t.debit : '',
+                t.kredit > 0 ? t.kredit : '',
+                (t.baki || 0),
+                t.kategori
             ]);
         }
         
-        if(data.length === 0) {
+        if(transactions.length === 0) {
             sheetData.push(['', 'Tiada data', '', '', '', '']);
         }
         
         let ws = XLSX.utils.aoa_to_sheet(sheetData);
+        ws['!cols'] = [{wch:20},{wch:35},{wch:15},{wch:15},{wch:15},{wch:18}];
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'CashFlow');
         
-        let today = new Date().toISOString().slice(0,19).replace(/:/g, '-');
-        XLSX.writeFile(wb, `CashFlow_${today}.xlsx`);
-        showToast('📥 Excel telah dimuat turun', '#10b981');
+        let filename = `CashFlow_${company}_${month}_${year}.xlsx`.replace(/[^a-zA-Z0-9._-]/g, '_');
+        XLSX.writeFile(wb, filename);
+        showToast('📥 Excel telah dimuat turun');
     }
 
-    // ========== IMPORT EXCEL ==========
     function importExcel() {
         let input = document.createElement('input');
         input.type = 'file';
@@ -450,13 +691,14 @@
                 let rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
                 
                 let newData = [];
-                for(let i = 1; i < rows.length; i++) {
+                // Data start dari row 5 (index 4)
+                for(let i = 4; i < rows.length; i++) {
                     let row = rows[i];
                     if(!row || row.length < 2) continue;
+                    if(i === 4) continue; // skip header row
                     let debit = parseFloat(row[2]) || 0;
                     let kredit = parseFloat(row[3]) || 0;
                     if(debit === 0 && kredit === 0 && !row[1]) continue;
-                    
                     newData.push({
                         tarikhMasa: row[0] || new Date().toLocaleString('ms-MY'),
                         keterangan: row[1] || '-',
@@ -468,12 +710,12 @@
                 }
                 
                 if(newData.length > 0) {
-                    data = newData;
-                    recalcBalance();
+                    transactions = newData;
+                    recalcBalances();
                     saveToLocal();
                     clearForm();
                     renderTable();
-                    showToast(`📂 Import berjaya: ${data.length} rekod`, '#10b981');
+                    showToast(`📂 Import berjaya: ${transactions.length} rekod`);
                 } else {
                     alert('❌ Tiada data sah dalam fail Excel');
                 }
@@ -483,38 +725,28 @@
         input.click();
     }
 
-    // ========== TOAST NOTIFICATION ==========
-    function showToast(msg, color) {
+    function showToast(msg) {
         let toast = document.createElement('div');
         toast.innerText = msg;
         toast.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: ${color};
-            color: white;
-            padding: 12px 24px;
-            border-radius: 40px;
-            font-size: 14px;
-            font-weight: bold;
-            z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: fixed; bottom: 20px; right: 20px; background: #1e4a6e;
+            color: white; padding: 12px 24px; border-radius: 40px; font-size: 14px;
+            font-weight: bold; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             animation: fadeInOut 2.5s ease forwards;
         `;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2500);
     }
 
-    // ========== EVENT LISTENER ==========
+    // ========== EVENT & INIT ==========
     document.getElementById('tarikhMasa').addEventListener('change', updateTarikhPreview);
-    document.getElementById('debit').addEventListener('input', function() {
-        if(this.value > 0) document.getElementById('kredit').value = 0;
-    });
-    document.getElementById('kredit').addEventListener('input', function() {
-        if(this.value > 0) document.getElementById('debit').value = 0;
-    });
+    document.getElementById('debit').addEventListener('input', function() { if(this.value > 0) document.getElementById('kredit').value = 0; });
+    document.getElementById('kredit').addEventListener('input', function() { if(this.value > 0) document.getElementById('debit').value = 0; });
+    document.getElementById('companyName').addEventListener('change', saveToLocal);
+    document.getElementById('reportTitle').addEventListener('change', saveToLocal);
+    document.getElementById('monthSelect').addEventListener('change', saveToLocal);
+    document.getElementById('yearSelect').addEventListener('change', saveToLocal);
 
-    // ========== CSS ANIMATION ==========
     let style = document.createElement('style');
     style.textContent = `
         @keyframes fadeInOut {
@@ -526,10 +758,8 @@
     `;
     document.head.appendChild(style);
 
-    // ========== INIT ==========
     loadFromLocal();
     setDefaultDateTime();
-    clearForm();
 </script>
 </body>
 </html>
