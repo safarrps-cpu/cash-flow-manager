@@ -2,766 +2,534 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Cash Flow Manager </title>
-    <!-- Font Awesome & Google Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- SheetJS untuk Excel import/export -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow Manager</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;padding:20px}
+        .container{max-width:1400px;margin:0 auto}
+        .header{background:#1e3a5f;color:#fff;padding:20px;border-radius:16px;margin-bottom:20px}
+        .toolbar{background:#fff;padding:15px;border-radius:12px;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap}
+        button{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
+        .btn-primary{background:#1e3a5f;color:#fff}
+        .btn-success{background:#10b981;color:#fff}
+        .btn-danger{background:#ef4444;color:#fff}
+        .btn-warning{background:#f59e0b;color:#fff}
+        .form-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:20px}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
+        input,select{padding:10px;border:1px solid #ccc;border-radius:8px;width:100%}
+        
+        .datetime-group{display:flex;gap:10px;align-items:center}
+        .datetime-group input{flex:1}
+        .time-preview{background:#eef2ff;padding:8px 12px;border-radius:8px;font-size:14px;font-weight:500;color:#1e3a5f;margin-top:8px}
+        
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}
+        th{background:#f1f5f9}
+        tr:hover{background:#fefce8;cursor:pointer}
+        .selected{background:#eef2ff}
+        .summary{background:#f8fafc;padding:15px;border-radius:12px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap}
+        .stat{padding:8px 16px;background:#fff;border-radius:20px}
+        
+        @media (max-width:768px){
+            body{padding:10px}
+            .form-grid{grid-template-columns:1fr}
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f0f2f5;
-            color: #1e293b;
-            padding: 20px;
+        
+        .empty-state{
+            text-align:center;
+            padding:60px 20px;
+            color:#94a3b8;
+            font-size:16px;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Header & Cards */
-        .app-header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f2b45 100%);
-            color: white;
-            padding: 20px 24px;
-            border-radius: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .app-header h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .app-header p {
-            opacity: 0.85;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-
-        .file-bar {
-            background: white;
-            border-radius: 16px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .file-badge {
-            background: #eef2ff;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #1e3a5f;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        button, .btn-like {
-            background: white;
-            border: 1px solid #cbd5e1;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: inherit;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        button i, .btn-like i {
-            font-size: 0.9rem;
-        }
-
-        button.primary {
-            background: #1e3a5f;
-            border-color: #1e3a5f;
-            color: white;
-        }
-
-        button.primary:hover {
-            background: #0f2b45;
-            transform: translateY(-1px);
-        }
-
-        button.success {
-            background: #10b981;
-            border-color: #10b981;
-            color: white;
-        }
-
-        button.warning {
-            background: #f59e0b;
-            border-color: #f59e0b;
-            color: white;
-        }
-
-        button.danger {
-            background: #ef4444;
-            border-color: #ef4444;
-            color: white;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-        }
-
-        /* Dua kolom utama */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 24px;
-        }
-
-        /* Form card */
-        .form-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            position: sticky;
-            top: 20px;
-        }
-
-        .form-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #eef2ff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #334155;
-        }
-
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
-
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: #1e3a5f;
-            box-shadow: 0 0 0 2px rgba(30,58,95,0.2);
-        }
-
-        .preview-text {
-            font-size: 0.75rem;
-            margin-top: 4px;
-            color: #475569;
-        }
-
-        .preview-text i {
-            font-size: 0.7rem;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        /* Table section */
-        .table-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            overflow-x: auto;
-        }
-
-        .summary-bar {
-            background: #f8fafc;
-            padding: 12px 16px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            font-weight: 500;
-        }
-
-        .summary-stats {
-            display: flex;
-            gap: 20px;
-        }
-
-        .stat {
-            background: white;
-            padding: 6px 14px;
-            border-radius: 40px;
-            border: 1px solid #e2e8f0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-
-        th {
-            background: #f1f5f9;
-            padding: 12px 8px;
-            text-align: left;
-            font-weight: 600;
-            color: #0f172a;
-            position: sticky;
-            top: 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #f1f5f9;
-            cursor: pointer;
-        }
-
-        tr:hover {
-            background: #fefce8;
-        }
-
-        .selected-row {
-            background: #eef2ff !important;
-        }
-
-        .debit-text {
-            color: #059669;
-            font-weight: 500;
-        }
-
-        .credit-text {
-            color: #dc2626;
-            font-weight: 500;
-        }
-
-        .baki-text {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .empty-table {
-            text-align: center;
-            padding: 40px;
-            color: #94a3b8;
-        }
-
-        footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: #64748b;
-        }
-
-        @media (max-width: 900px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            .form-card {
-                position: relative;
-                top: 0;
-            }
-            body {
-                padding: 12px;
-            }
+        .empty-state i{
+            font-size:48px;
+            margin-bottom:15px;
+            display:block;
         }
     </style>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="container">
-    <div class="app-header">
-        <h1><i class="fas fa-coins"></i> Cash Flow Manager</h1>
-        <p>Urus aliran tunai dengan mudah | Auto simpan & muat turun Excel</p>
+    <div class="header">
+        <h1>💰 Cash Flow Manager</h1>
+        <p>Urus Aliran Tunai · <span id="liveClock"></span></p>
     </div>
 
-    <div class="file-bar">
-        <div class="file-info">
-            <i class="fas fa-file-excel" style="color:#1e7e34;"></i>
-            <span class="file-badge" id="filenameLabel">CashFlow_Contoh.xlsx</span>
-            <span id="recordCount" class="file-badge" style="background:#e6f7ec;">0 rekod</span>
-        </div>
-        <div class="btn-group">
-            <button id="newFileBtn" class="primary"><i class="fas fa-file"></i> Baru (reset)</button>
-            <button id="importBtn"><i class="fas fa-upload"></i> Import Excel</button>
-            <button id="exportBtn" class="success"><i class="fas fa-download"></i> Muat Turun Excel</button>
-        </div>
+    <div class="toolbar">
+        <button class="btn-primary" onclick="exportExcel()">📥 Muat Turun Excel</button>
+        <button onclick="importExcel()">📂 Import Excel</button>
+        <button class="btn-warning" onclick="newFile()">🆕 Baru</button>
+        <button onclick="clearAllData()" class="btn-danger">🗑️ Reset Semua Data</button>
     </div>
 
-    <!-- Dua kolom -->
-    <div class="dashboard">
-        <!-- Form panel -->
-        <div class="form-card">
-            <div class="form-title">
-                <i class="fas fa-pen-alt"></i> Tambah / Edit Transaksi
-            </div>
-            <div class="input-group">
-                <label><i class="far fa-calendar-alt"></i> Tarikh</label>
-                <input type="text" id="tarikhInput" placeholder="dd/mm/yyyy atau 15/1 (auto tahun)">
-                <div class="preview-text" id="tarikhPreview"></div>
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-tag"></i> Keterangan</label>
-                <input type="text" id="keteranganInput" placeholder="Contoh: Jualan tunai, Belian stok...">
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-arrow-up"></i> Debit (RM) - Wang Masuk</label>
-                <input type="number" id="debitInput" step="0.01" placeholder="0.00" value="0">
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-arrow-down"></i> Kredit (RM) - Wang Keluar</label>
-                <input type="number" id="kreditInput" step="0.01" placeholder="0.00" value="0">
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-list"></i> Kategori</label>
-                <select id="kategoriSelect">
-                    <option>Baki Awal</option><option>Jualan</option><option>Belian</option><option>Perbelanjaan Kedai</option>
-                    <option>Sewa</option><option>Utiliti</option><option>Gaji</option><option>Stok</option><option>Lain-lain</option>
-                    <option>Pengangkutan</option><option>Promosi</option><option>Cukai</option>
-                </select>
-            </div>
-            <div class="preview-text" id="bakiPreview" style="background:#f1f5f9; padding:8px; border-radius:12px; margin-top:6px;"></div>
-            <div class="action-buttons">
-                <button id="tambahBtn" class="primary"><i class="fas fa-plus-circle"></i> TAMBAH</button>
-                <button id="editBtn" style="background:#fef9e3; border-color:#fcd34d;"><i class="fas fa-edit"></i> EDIT</button>
-                <button id="deleteBtn" class="danger"><i class="fas fa-trash-alt"></i> DELETE</button>
-                <button id="clearBtn"><i class="fas fa-eraser"></i> CLEAR</button>
-            </div>
-        </div>
-
-        <!-- Table & ringkasan -->
-        <div class="table-card">
-            <div class="summary-bar">
-                <div><i class="fas fa-chart-line"></i> Ringkasan Kewangan</div>
-                <div class="summary-stats">
-                    <div class="stat"><i class="fas fa-plus-circle text-green"></i> Debit: <strong id="totalDebit">0.00</strong></div>
-                    <div class="stat"><i class="fas fa-minus-circle text-red"></i> Kredit: <strong id="totalKredit">0.00</strong></div>
-                    <div class="stat"><i class="fas fa-balance-scale"></i> Baki Semasa: <strong id="currentBalance">0.00</strong></div>
+    <div class="form-card">
+        <h3>📝 Tambah / Edit Transaksi</h3>
+        <div class="form-grid">
+            <div>
+                <label>📅 Tarikh & Masa</label>
+                <div class="datetime-group">
+                    <input type="datetime-local" id="tarikhMasa" step="1">
+                </div>
+                <div class="time-preview" id="tarikhPreview">
+                    ⏰ Pilih tarikh dan masa
                 </div>
             </div>
-            <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
-                <table id="cashflowTable">
-                    <thead>
-                        <tr><th>#</th><th>Tarikh</th><th>Keterangan</th><th>Debit (RM)</th><th>Kredit (RM)</th><th>Baki (RM)</th><th>Kategori</th></tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr class="empty-table"><td colspan="7">Tiada data. Klik 'TAMBAH' atau import Excel</td></tr>
-                    </tbody>
-                </table>
+            <div>
+                <label>📝 Keterangan</label>
+                <input type="text" id="keterangan" placeholder="Contoh: Jualan, Belian, Gaji...">
+            </div>
+            <div>
+                <label>💰 Debit (RM) - Wang Masuk</label>
+                <input type="number" id="debit" placeholder="0.00" step="0.01" value="0">
+            </div>
+            <div>
+                <label>💸 Kredit (RM) - Wang Keluar</label>
+                <input type="number" id="kredit" placeholder="0.00" step="0.01" value="0">
+            </div>
+            <div>
+                <label>🏷️ Kategori</label>
+                <select id="kategori">
+                    <option>Baki Awal</option>
+                    <option>Jualan</option>
+                    <option>Belian</option>
+                    <option>Perbelanjaan</option>
+                    <option>Sewa</option>
+                    <option>Utiliti</option>
+                    <option>Gaji</option>
+                    <option>Stok</option>
+                    <option>Pengangkutan</option>
+                    <option>Promosi</option>
+                    <option>Cukai</option>
+                    <option>Lain-lain</option>
+                </select>
             </div>
         </div>
+        <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-primary" onclick="tambah()">➕ TAMBAH</button>
+            <button class="btn-success" onclick="edit()">✏️ EDIT</button>
+            <button class="btn-danger" onclick="hapus()">🗑️ DELETE</button>
+            <button onclick="clearForm()">🔄 CLEAR FORM</button>
+        </div>
     </div>
-    <footer>
-        <i class="fas fa-save"></i> Data disimpan secara automatik di penyemak imbas (localStorage). Muat turun Excel untuk simpanan kekal.
-    </footer>
+
+    <div class="summary">
+        <div class="stat">💰 Debit: RM <span id="totalDebit">0.00</span></div>
+        <div class="stat">💸 Kredit: RM <span id="totalKredit">0.00</span></div>
+        <div class="stat">🏦 Baki Semasa: RM <span id="totalBaki">0.00</span></div>
+        <div class="stat">📊 Jumlah Rekod: <span id="totalRekod">0</span></div>
+    </div>
+
+    <div style="overflow-x:auto; max-height:500px; overflow-y:auto">
+        <table id="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tarikh & Masa</th>
+                    <th>Keterangan</th>
+                    <th>Debit (RM)</th>
+                    <th>Kredit (RM)</th>
+                    <th>Baki (RM)</th>
+                    <th>Kategori</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr class="empty-state">
+                    <td colspan="7">
+                        <i>📭</i>
+                        Tiada rekod transaksi<br>
+                        Klik <strong>TAMBAH</strong> untuk mula menggunakan
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    // ------------------ Data & State ------------------
-    let transactions = [];      // array objek { tarikh, keterangan, debit, kredit, kategori, baki (dynamic) }
+    // ========== DATA ==========
+    let data = [];
     let selectedIndex = null;
-    let currentFileName = "CashFlow_Contoh.xlsx";
-    
-    // Helper: format tarikh ke dd/mm/yyyy
-    function formatTarikh(userInput) {
-        if (!userInput || userInput.trim() === "") return new Date().toLocaleDateString('en-GB');
-        let s = userInput.trim();
-        let tahunSekarang = new Date().getFullYear();
-        // dd/mm or dd-mm
-        let match = s.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
-        if (match) {
-            let d = parseInt(match[1]), m = parseInt(match[2]);
-            if (m >= 1 && m <= 12 && d >= 1 && d <= 31) return `${d.toString().padStart(2,'0')}/${m.toString().padStart(2,'0')}/${tahunSekarang}`;
-        }
-        // dd/mm/yyyy or dd-mm-yyyy
-        match = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-        if (match) {
-            let d=parseInt(match[1]), m=parseInt(match[2]), y=parseInt(match[3]);
-            if (m>=1&&m<=12&&d>=1&&d<=31) return `${d.toString().padStart(2,'0')}/${m.toString().padStart(2,'0')}/${y}`;
-        }
-        // dd/mm/yy
-        match = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/);
-        if (match) {
-            let d=parseInt(match[1]), m=parseInt(match[2]), y=2000+parseInt(match[3]);
-            if (m>=1&&m<=12&&d>=1&&d<=31) return `${d.toString().padStart(2,'0')}/${m.toString().padStart(2,'0')}/${y}`;
-        }
-        // malay month? optional simple
-        return s;
+
+    // ========== JAM LANGSUNG ==========
+    function updateClock() {
+        let now = new Date();
+        let formatted = now.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) + 
+                       ' · ' + now.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        document.getElementById('liveClock').innerText = formatted;
     }
-    
-    function validateAndFixTarikh(txt) {
-        let formatted = formatTarikh(txt);
-        let parts = formatted.split('/');
-        if (parts.length === 3) {
-            let d = parseInt(parts[0]), m = parseInt(parts[1]), y = parseInt(parts[2]);
-            if (!isNaN(d) && !isNaN(m) && !isNaN(y) && m>=1 && m<=12 && d>=1 && d<=31) {
-                return { value: formatted, error: null };
-            }
-        }
-        return { value: formatted, error: "Tarikh tidak sah, gunakan dd/mm/yyyy" };
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ========== SET DEFAULT TARIKH (SEKARANG) ==========
+    function setDefaultDateTime() {
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = String(now.getMonth() + 1).padStart(2, '0');
+        let day = String(now.getDate()).padStart(2, '0');
+        let hours = String(now.getHours()).padStart(2, '0');
+        let minutes = String(now.getMinutes()).padStart(2, '0');
+        let seconds = String(now.getSeconds()).padStart(2, '0');
+        let datetimeString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        document.getElementById('tarikhMasa').value = datetimeString;
+        updateTarikhPreview();
     }
-    
-    // kira semula baki kumulatif
-    function recalcBalances() {
+
+    // ========== PREVIEW TARIKH MASA ==========
+    function updateTarikhPreview() {
+        let datetimeValue = document.getElementById('tarikhMasa').value;
+        if(datetimeValue) {
+            let date = new Date(datetimeValue);
+            let formatted = date.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
+                           ' · ' + date.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            document.getElementById('tarikhPreview').innerHTML = `📅 ${formatted}`;
+        } else {
+            document.getElementById('tarikhPreview').innerHTML = '⏰ Pilih tarikh dan masa';
+        }
+    }
+
+    // ========== FORMAT TARIKH UNTUK SIMPAN ==========
+    function formatTarikhMasa(datetimeValue) {
+        if(!datetimeValue) return new Date().toLocaleString('ms-MY');
+        let date = new Date(datetimeValue);
+        return date.toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' }) +
+               ' ' + date.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }
+
+    // ========== BACA DARI FORM ==========
+    function getCurrentTransaction() {
+        let datetimeValue = document.getElementById('tarikhMasa').value;
+        let tarikhMasa = formatTarikhMasa(datetimeValue);
+        let keterangan = document.getElementById('keterangan').value.trim() || "-";
+        let debit = parseFloat(document.getElementById('debit').value) || 0;
+        let kredit = parseFloat(document.getElementById('kredit').value) || 0;
+        
+        if(debit > 0 && kredit > 0) {
+            throw new Error("❌ Pilih sama ada Debit ATAU Kredit sahaja");
+        }
+        if(debit === 0 && kredit === 0) {
+            throw new Error("❌ Sila isi jumlah Debit atau Kredit");
+        }
+        
+        let kategori = document.getElementById('kategori').value;
+        return { tarikhMasa, keterangan, debit, kredit, kategori };
+    }
+
+    // ========== KIRA BAKI SEMULA ==========
+    function recalcBalance() {
         let running = 0;
-        for (let i=0; i<transactions.length; i++) {
-            let d = parseFloat(transactions[i].debit) || 0;
-            let k = parseFloat(transactions[i].kredit) || 0;
-            running = running + d - k;
-            transactions[i].baki = running;
+        for(let i = 0; i < data.length; i++) {
+            running = running + (data[i].debit || 0) - (data[i].kredit || 0);
+            data[i].baki = running;
         }
     }
-    
-    // simpan ke localStorage
+
+    // ========== SIMPAN KE LOCALSTORAGE ==========
     function saveToLocal() {
-        const storeData = {
-            transactions: transactions,
-            fileName: currentFileName,
-            companyHeader: "ABC SDN ENT",
-            titleHeader: "CASH FLOW STATEMENT"
-        };
-        localStorage.setItem("cashflow_app_data", JSON.stringify(storeData));
+        localStorage.setItem("cashflow_data_general", JSON.stringify(data));
     }
-    
-    // load dari localStorage
+
+    // ========== LOAD DARI LOCALSTORAGE ==========
     function loadFromLocal() {
-        const raw = localStorage.getItem("cashflow_app_data");
-        if (raw) {
-            try {
-                const saved = JSON.parse(raw);
-                if (saved.transactions && Array.isArray(saved.transactions)) {
-                    transactions = saved.transactions;
-                    // pastikan setiap ada field baki
-                    recalcBalances();
-                }
-                if (saved.fileName) currentFileName = saved.fileName;
-                updateFilenameDisplay();
-            } catch(e) { console.warn(e); }
+        let saved = localStorage.getItem("cashflow_data_general");
+        if(saved) {
+            data = JSON.parse(saved);
+            recalcBalance();
+        } else {
+            data = [];  // ❌ TIADA DATA CONTOH - KOSONG TERUS
         }
-        if (!transactions.length) {
-            // add sample data sikit untuk demo
-            transactions = [
-                { tarikh: "01/01/2025", keterangan: "Baki Awal Tunai", debit: 5000, kredit: 0, kategori: "Baki Awal", baki: 5000 },
-                { tarikh: "05/01/2025", keterangan: "Jualan Harian", debit: 1250, kredit: 0, kategori: "Jualan", baki: 6250 },
-                { tarikh: "10/01/2025", keterangan: "Belian Stok", debit: 0, kredit: 800, kategori: "Belian", baki: 5450 },
-                { tarikh: "15/01/2025", keterangan: "Bayaran Sewa", debit: 0, kredit: 1500, kategori: "Sewa", baki: 3950 }
-            ];
-            recalcBalances();
-            saveToLocal();
-        }
-        recalcBalances();
-        updateFilenameDisplay();
+        renderTable();
+        updateSummary();
     }
-    
-    function updateFilenameDisplay() {
-        document.getElementById("filenameLabel").innerText = currentFileName;
-    }
-    
-    // render table
+
+    // ========== RENDER JADUAL ==========
     function renderTable() {
-        const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = "";
-        if (transactions.length === 0) {
-            tbody.innerHTML = '<tr class="empty-table"><td colspan="7">Tiada data. Klik TAMBAH atau import Excel</td></tr>';
-            document.getElementById("recordCount").innerText = "0 rekod";
-            document.getElementById("totalDebit").innerText = "0.00";
-            document.getElementById("totalKredit").innerText = "0.00";
-            document.getElementById("currentBalance").innerText = "0.00";
+        let tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        if(data.length === 0) {
+            tbody.innerHTML = `
+                <tr class="empty-state">
+                    <td colspan="7">
+                        <i>📭</i>
+                        Tiada rekod transaksi<br>
+                        Klik <strong>TAMBAH</strong> untuk mula menggunakan
+                    </td>
+                </tr>
+            `;
             return;
         }
-        let totalD = 0, totalK = 0;
-        transactions.forEach((t, idx) => {
-            totalD += parseFloat(t.debit) || 0;
-            totalK += parseFloat(t.kredit) || 0;
-            const row = tbody.insertRow();
-            if (selectedIndex === idx) row.classList.add("selected-row");
-            row.insertCell(0).innerText = idx+1;
-            row.insertCell(1).innerText = t.tarikh;
-            row.insertCell(2).innerText = t.keterangan || "-";
-            const debitCell = row.insertCell(3);
-            debitCell.innerText = (t.debit && t.debit>0) ? `RM ${parseFloat(t.debit).toFixed(2)}` : "-";
-            debitCell.className = t.debit>0 ? "debit-text" : "";
-            const creditCell = row.insertCell(4);
-            creditCell.innerText = (t.kredit && t.kredit>0) ? `RM ${parseFloat(t.kredit).toFixed(2)}` : "-";
-            creditCell.className = t.kredit>0 ? "credit-text" : "";
-            row.insertCell(5).innerText = `RM ${(t.baki || 0).toFixed(2)}`;
-            row.insertCell(6).innerText = t.kategori || "-";
-            row.style.cursor = "pointer";
-            row.addEventListener("click", (function(idx){ return function(){ selectRow(idx); }; })(idx));
-        });
-        document.getElementById("recordCount").innerText = `${transactions.length} rekod`;
-        document.getElementById("totalDebit").innerHTML = totalD.toFixed(2);
-        document.getElementById("totalKredit").innerHTML = totalK.toFixed(2);
-        const finalBaki = transactions.length ? transactions[transactions.length-1].baki : 0;
-        document.getElementById("currentBalance").innerHTML = finalBaki.toFixed(2);
+        
+        for(let i = 0; i < data.length; i++) {
+            let row = tbody.insertRow();
+            if(selectedIndex === i) row.className = 'selected';
+            
+            row.insertCell(0).innerText = i + 1;
+            row.insertCell(1).innerText = data[i].tarikhMasa;
+            row.insertCell(2).innerText = data[i].keterangan;
+            row.insertCell(3).innerHTML = data[i].debit > 0 ? `RM ${data[i].debit.toFixed(2)}` : '-';
+            row.insertCell(4).innerHTML = data[i].kredit > 0 ? `RM ${data[i].kredit.toFixed(2)}` : '-';
+            row.insertCell(5).innerHTML = `RM ${(data[i].baki || 0).toFixed(2)}`;
+            row.insertCell(6).innerText = data[i].kategori;
+            
+            row.onclick = (function(idx) { return function() { selectRow(idx); }; })(i);
+        }
+        
+        updateSummary();
     }
-    
+
+    // ========== UPDATE RINGKASAN ==========
+    function updateSummary() {
+        let totalD = 0, totalK = 0;
+        for(let d of data) {
+            totalD += d.debit || 0;
+            totalK += d.kredit || 0;
+        }
+        let baki = data.length > 0 ? data[data.length-1].baki : 0;
+        document.getElementById('totalDebit').innerText = totalD.toFixed(2);
+        document.getElementById('totalKredit').innerText = totalK.toFixed(2);
+        document.getElementById('totalBaki').innerText = baki.toFixed(2);
+        document.getElementById('totalRekod').innerText = data.length;
+    }
+
+    // ========== PILIH ROW ==========
     function selectRow(idx) {
         selectedIndex = idx;
-        const t = transactions[idx];
-        document.getElementById("tarikhInput").value = t.tarikh;
-        document.getElementById("keteranganInput").value = t.keterangan;
-        document.getElementById("debitInput").value = t.debit;
-        document.getElementById("kreditInput").value = t.kredit;
-        document.getElementById("kategoriSelect").value = t.kategori;
-        previewTarikh();
-        previewBakiDynamic();
-        renderTable(); // refresh highlight
-    }
-    
-    function clearForm() {
-        selectedIndex = null;
-        document.getElementById("tarikhInput").value = new Date().toLocaleDateString('en-GB');
-        document.getElementById("keteranganInput").value = "";
-        document.getElementById("debitInput").value = "0";
-        document.getElementById("kreditInput").value = "0";
-        document.getElementById("kategoriSelect").value = "Jualan";
-        previewTarikh();
-        previewBakiDynamic();
+        let d = data[idx];
+        
+        // Parse tarikh masa untuk datetime-local
+        let datePart = d.tarikhMasa.split(' · ')[0];
+        let timePart = d.tarikhMasa.split(' · ')[1] || '00:00:00';
+        let dateObj = null;
+        
+        try {
+            let parts = datePart.split('/');
+            if(parts.length === 3) {
+                let formatted = `${parts[2]}-${parts[1]}-${parts[0]}T${timePart}`;
+                document.getElementById('tarikhMasa').value = formatted;
+            }
+        } catch(e) {
+            setDefaultDateTime();
+        }
+        
+        document.getElementById('keterangan').value = d.keterangan;
+        document.getElementById('debit').value = d.debit;
+        document.getElementById('kredit').value = d.kredit;
+        document.getElementById('kategori').value = d.kategori;
+        updateTarikhPreview();
         renderTable();
     }
-    
-    function previewTarikh() {
-        let raw = document.getElementById("tarikhInput").value;
-        let res = validateAndFixTarikh(raw);
-        let previewDiv = document.getElementById("tarikhPreview");
-        if (res.error) previewDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#dc2626"></i> ${res.error}`;
-        else previewDiv.innerHTML = `<i class="fas fa-check-circle" style="color:#10b981"></i> Format: ${res.value}`;
+
+    // ========== CLEAR FORM ==========
+    function clearForm() {
+        selectedIndex = null;
+        setDefaultDateTime();
+        document.getElementById('keterangan').value = '';
+        document.getElementById('debit').value = '0';
+        document.getElementById('kredit').value = '0';
+        document.getElementById('kategori').value = 'Jualan';
+        renderTable();
     }
-    
-    function previewBakiDynamic() {
-        let debit = parseFloat(document.getElementById("debitInput").value) || 0;
-        let kredit = parseFloat(document.getElementById("kreditInput").value) || 0;
-        let lastBaki = (transactions.length > 0 && selectedIndex === null) ? (transactions[transactions.length-1].baki || 0) : 
-                        (selectedIndex !== null ? (selectedIndex>0 ? transactions[selectedIndex-1]?.baki || 0 : 0) : (transactions.length>0 ? transactions[transactions.length-1].baki : 0));
-        if (selectedIndex !== null) {
-            // bila edit, kesan baki sebelum index tersebut
-            let beforeBalance = 0;
-            for(let i=0; i<selectedIndex; i++) beforeBalance += (transactions[i].debit - transactions[i].kredit);
-            lastBaki = beforeBalance;
-        }
-        let newBaki = lastBaki + debit - kredit;
-        document.getElementById("bakiPreview").innerHTML = `<i class="fas fa-calculator"></i> Baki selepas: <strong>RM ${newBaki.toFixed(2)}</strong> (Kumulatif)`;
-    }
-    
-    function getCurrentTransactionFromForm() {
-        let tarikhRaw = document.getElementById("tarikhInput").value;
-        let validDate = validateAndFixTarikh(tarikhRaw);
-        if (validDate.error) throw new Error(validDate.error);
-        let keterangan = document.getElementById("keteranganInput").value.trim() || "-";
-        let debit = parseFloat(document.getElementById("debitInput").value) || 0;
-        let kredit = parseFloat(document.getElementById("kreditInput").value) || 0;
-        if (debit > 0 && kredit > 0) throw new Error("Pilih sama ada Debit ATAU Kredit sahaja.");
-        if (debit === 0 && kredit === 0) throw new Error("Sila isi jumlah Debit atau Kredit.");
-        let kategori = document.getElementById("kategoriSelect").value;
-        return { tarikh: validDate.value, keterangan, debit, kredit, kategori };
-    }
-    
-    function tambahTransaction() {
+
+    // ========== TAMBAH ==========
+    function tambah() {
         try {
-            let newTx = getCurrentTransactionFromForm();
-            transactions.push({ ...newTx, baki: 0 });
-            recalcBalances();
+            let newTx = getCurrentTransaction();
+            newTx.baki = 0;
+            data.push(newTx);
+            recalcBalance();
             saveToLocal();
             clearForm();
             renderTable();
-            showStatus("Transaksi berjaya ditambah", "#10b981");
+            showToast('✅ Transaksi berjaya ditambah', '#10b981');
         } catch(err) {
             alert(err.message);
         }
     }
-    
-    function editTransaction() {
-        if (selectedIndex === null) { alert("Sila pilih rekod dari jadual terlebih dahulu."); return; }
+
+    // ========== EDIT ==========
+    function edit() {
+        if(selectedIndex === null) {
+            alert('⚠️ Sila pilih rekod dari jadual terlebih dahulu');
+            return;
+        }
         try {
-            let updated = getCurrentTransactionFromForm();
-            transactions[selectedIndex] = { ...updated, baki: 0 };
-            recalcBalances();
+            let updated = getCurrentTransaction();
+            updated.baki = 0;
+            data[selectedIndex] = updated;
+            recalcBalance();
             saveToLocal();
             clearForm();
             renderTable();
-            showStatus("Rekod dikemaskini", "#f59e0b");
-        } catch(err) { alert(err.message); }
-    }
-    
-    function deleteTransaction() {
-        if (selectedIndex === null) { alert("Pilih rekod untuk dipadam."); return; }
-        if (confirm("Padam rekod ini?")) {
-            transactions.splice(selectedIndex, 1);
-            recalcBalances();
-            saveToLocal();
-            clearForm();
-            renderTable();
-            showStatus("Rekod dipadam", "#dc2626");
+            showToast('✏️ Rekod berjaya dikemaskini', '#f59e0b');
+        } catch(err) {
+            alert(err.message);
         }
     }
-    
-    function exportToExcel() {
-        // Create worksheet menggunakan SheetJS
-        let sheetData = [["Tarikh", "Keterangan", "Debit (RM)", "Kredit (RM)", "Baki (RM)", "Kategori"]];
-        transactions.forEach(t => {
-            sheetData.push([
-                t.tarikh, t.keterangan, t.debit>0 ? t.debit : "", t.kredit>0 ? t.kredit : "", t.baki, t.kategori
-            ]);
-        });
-        // tambah ringkasan
-        sheetData.push([], ["JUMLAH DEBIT:", "", `=SUM(C2:C${transactions.length+1})`, "", "", ""]);
-        sheetData.push(["JUMLAH KREDIT:", "", "", `=SUM(D2:D${transactions.length+1})`, "", ""]);
-        let lastBaki = transactions.length ? transactions[transactions.length-1].baki : 0;
-        sheetData.push(["BAKI AKHIR:", "", "", "", lastBaki, ""]);
+
+    // ========== HAPUS ==========
+    function hapus() {
+        if(selectedIndex === null) {
+            alert('⚠️ Sila pilih rekod dari jadual terlebih dahulu');
+            return;
+        }
+        if(confirm('🗑️ Padam rekod ini?')) {
+            data.splice(selectedIndex, 1);
+            recalcBalance();
+            saveToLocal();
+            clearForm();
+            renderTable();
+            showToast('🗑️ Rekod telah dipadam', '#ef4444');
+        }
+    }
+
+    // ========== RESET SEMUA DATA ==========
+    function clearAllData() {
+        if(confirm('⚠️ PERINGATAN: Semua data akan hilang selama-lamanya! Pastikan anda sudah muat turun Excel jika perlu. Teruskan?')) {
+            data = [];
+            saveToLocal();
+            clearForm();
+            renderTable();
+            showToast('🗑️ Semua data telah direset', '#ef4444');
+        }
+    }
+
+    // ========== FAIL BARU ==========
+    function newFile() {
+        if(confirm('🆕 Buat fail baru? Data sedia ada akan digantikan dengan fail kosong. Simpan dulu dengan "Muat Turun Excel" jika perlu.')) {
+            data = [];
+            saveToLocal();
+            clearForm();
+            renderTable();
+            showToast('📄 Fail baru (kosong) telah dicipta', '#1e3a5f');
+        }
+    }
+
+    // ========== EXPORT EXCEL ==========
+    function exportExcel() {
+        let sheetData = [
+            ['Tarikh & Masa', 'Keterangan', 'Debit (RM)', 'Kredit (RM)', 'Baki (RM)', 'Kategori']
+        ];
         
-        const ws = XLSX.utils.aoa_to_sheet(sheetData);
-        ws['!cols'] = [{wch:12},{wch:35},{wch:15},{wch:15},{wch:15},{wch:18}];
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "CashFlow");
-        // tentukan nama fail
-        let filename = currentFileName.endsWith(".xlsx") ? currentFileName : "CashFlow_Export.xlsx";
-        XLSX.writeFile(wb, filename);
-        showStatus("Excel telah dimuat turun ✅", "#10b981");
-    }
-    
-    function importExcel(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: "" });
-            if (!rows || rows.length < 2) { alert("Fail Excel tiada data."); return; }
-            let newTransactions = [];
-            // expect header row Tarikh,Keterangan,Debit,Kredit,Baki,Kategori
-            for (let i=1; i<rows.length; i++) {
-                let row = rows[i];
-                if (!row || row.length<2) continue;
-                let tarikhRaw = row[0] ? row[0].toString() : "";
-                let tarikh = formatTarikh(tarikhRaw);
-                let keterangan = row[1] ? row[1].toString() : "";
-                let debit = parseFloat(row[2]) || 0;
-                let kredit = parseFloat(row[3]) || 0;
-                let kategori = (row[5] && row[5].toString()) || "Lain-lain";
-                if (debit===0 && kredit===0 && !keterangan) continue;
-                newTransactions.push({ tarikh, keterangan, debit, kredit, kategori, baki:0 });
-            }
-            if (newTransactions.length) {
-                transactions = newTransactions;
-                recalcBalances();
-                saveToLocal();
-                clearForm();
-                renderTable();
-                showStatus(`Import berjaya: ${transactions.length} rekod`, "#10b981");
-            } else {
-                alert("Tiada transaksi yang sah dalam fail.");
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-    
-    function newFileReset() {
-        if (confirm("Buat fail baru? Semua data semasa akan hilang (kecuali anda muat turun dahulu).")) {
-            transactions = [];
-            selectedIndex = null;
-            saveToLocal();
-            clearForm();
-            renderTable();
-            showStatus("Fail baru (kosong) dicipta", "#1e3a5f");
+        for(let d of data) {
+            sheetData.push([
+                d.tarikhMasa,
+                d.keterangan,
+                d.debit > 0 ? d.debit : '',
+                d.kredit > 0 ? d.kredit : '',
+                d.baki || 0,
+                d.kategori
+            ]);
         }
+        
+        if(data.length === 0) {
+            sheetData.push(['', 'Tiada data', '', '', '', '']);
+        }
+        
+        let ws = XLSX.utils.aoa_to_sheet(sheetData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'CashFlow');
+        
+        let today = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+        XLSX.writeFile(wb, `CashFlow_${today}.xlsx`);
+        showToast('📥 Excel telah dimuat turun', '#10b981');
     }
-    
-    function showStatus(msg, color) {
-        let statDiv = document.createElement("div");
-        statDiv.innerText = msg;
-        statDiv.style.position = "fixed";
-        statDiv.style.bottom = "20px";
-        statDiv.style.right = "20px";
-        statDiv.style.background = color;
-        statDiv.style.color = "white";
-        statDiv.style.padding = "8px 18px";
-        statDiv.style.borderRadius = "40px";
-        statDiv.style.fontSize = "0.85rem";
-        statDiv.style.zIndex = "999";
-        statDiv.style.boxShadow = "0 2px 10px rgba(0,0,0,0.1)";
-        document.body.appendChild(statDiv);
-        setTimeout(() => statDiv.remove(), 2000);
-    }
-    
-    // Event binding
-    document.getElementById("tambahBtn").addEventListener("click", tambahTransaction);
-    document.getElementById("editBtn").addEventListener("click", editTransaction);
-    document.getElementById("deleteBtn").addEventListener("click", deleteTransaction);
-    document.getElementById("clearBtn").addEventListener("click", clearForm);
-    document.getElementById("exportBtn").addEventListener("click", exportToExcel);
-    document.getElementById("newFileBtn").addEventListener("click", newFileReset);
-    document.getElementById("importBtn").addEventListener("click", () => {
-        let input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".xlsx, .xls";
-        input.onchange = (e) => { if(e.target.files[0]) importExcel(e.target.files[0]); };
+
+    // ========== IMPORT EXCEL ==========
+    function importExcel() {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.xlsx, .xls';
+        input.onchange = function(e) {
+            let file = e.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function(evt) {
+                let wb = XLSX.read(evt.target.result, { type: 'array' });
+                let ws = wb.Sheets[wb.SheetNames[0]];
+                let rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+                
+                let newData = [];
+                for(let i = 1; i < rows.length; i++) {
+                    let row = rows[i];
+                    if(!row || row.length < 2) continue;
+                    let debit = parseFloat(row[2]) || 0;
+                    let kredit = parseFloat(row[3]) || 0;
+                    if(debit === 0 && kredit === 0 && !row[1]) continue;
+                    
+                    newData.push({
+                        tarikhMasa: row[0] || new Date().toLocaleString('ms-MY'),
+                        keterangan: row[1] || '-',
+                        debit: debit,
+                        kredit: kredit,
+                        kategori: row[5] || 'Lain-lain',
+                        baki: 0
+                    });
+                }
+                
+                if(newData.length > 0) {
+                    data = newData;
+                    recalcBalance();
+                    saveToLocal();
+                    clearForm();
+                    renderTable();
+                    showToast(`📂 Import berjaya: ${data.length} rekod`, '#10b981');
+                } else {
+                    alert('❌ Tiada data sah dalam fail Excel');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        };
         input.click();
+    }
+
+    // ========== TOAST NOTIFICATION ==========
+    function showToast(msg, color) {
+        let toast = document.createElement('div');
+        toast.innerText = msg;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: ${color};
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: fadeInOut 2.5s ease forwards;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    // ========== EVENT LISTENER ==========
+    document.getElementById('tarikhMasa').addEventListener('change', updateTarikhPreview);
+    document.getElementById('debit').addEventListener('input', function() {
+        if(this.value > 0) document.getElementById('kredit').value = 0;
     });
-    document.getElementById("tarikhInput").addEventListener("input", previewTarikh);
-    document.getElementById("debitInput").addEventListener("input", previewBakiDynamic);
-    document.getElementById("kreditInput").addEventListener("input", previewBakiDynamic);
-    
-    // initialize
+    document.getElementById('kredit').addEventListener('input', function() {
+        if(this.value > 0) document.getElementById('debit').value = 0;
+    });
+
+    // ========== CSS ANIMATION ==========
+    let style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); visibility: hidden; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ========== INIT ==========
     loadFromLocal();
-    renderTable();
+    setDefaultDateTime();
     clearForm();
-    previewTarikh();
 </script>
 </body>
 </html>
